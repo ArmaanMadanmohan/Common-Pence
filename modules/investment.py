@@ -64,7 +64,6 @@ class Engine:
 
 class Stock: 
     def __init__(self):
-        # set share price depending on current stage?  
         self.share_price = 4 # random.uniform(3.0, 8.0) 
         self.dividend = self.share_price * random.uniform(0.1, 0.4) # randomise initially
         self.shares = 0
