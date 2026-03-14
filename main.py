@@ -1,10 +1,10 @@
 import time
 from modules.investment import Engine
-from modules.cardplay import cards
+from modules.cards import cards
 
 def calculate_total_wealth(player_engine, cash):
     # For now, assuming 1 unit of stock/bond/etf/bank = $1 for simplicity.
-    portfolio_value = player_engine.stock + player_engine.bonds + player_engine.etf + player_engine.bank
+    portfolio_value = (player_engine.stock.shares * player_engine.stock.share_price) + player_engine.bonds + player_engine.etf + player_engine.bank
     return cash + portfolio_value
 
 def print_week_lore(week):
@@ -30,7 +30,7 @@ def game_loop():
     time.sleep(1)
     
     # Initialize game variables
-    game_engine = engine() # Instantiate your engine to track shares
+    game_engine = Engine() # Instantiate your engine to track shares
     player_cash = 100      # Starting money
     
     # Game Constants

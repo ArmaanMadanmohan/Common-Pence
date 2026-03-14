@@ -49,8 +49,8 @@ class Engine:
 
 class Stock: 
     def __init__(self):
-        self.dividend # randomise initially
-        self.share_price # randomise initially and growth and multiply share price by that
+        self.dividend = 0 # randomise initially
+        self.share_price = 0 # randomise initially and growth and multiply share price by that
         self.shares = 0
 
     def add(self, num: int):
@@ -73,5 +73,5 @@ class Bond:
     def add(self, num: int):
         self.amt += num
 
-    def update(self):
+    # def update(self):
 

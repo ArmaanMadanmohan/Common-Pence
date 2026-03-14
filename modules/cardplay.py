@@ -1,5 +1,5 @@
 from enum import Enum
-from modules.investment import engine
+from modules.investment import Engine
 
 class card_type(Enum):
     INVEST = 1
