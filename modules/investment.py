@@ -62,7 +62,7 @@ class Engine:
         etf_income = self.etf.shares * self.etf.get_dividend()
         # bond_income = self.bonds.get_coupon_payment() 
 
-        self.store += (stock_income + etf_income + bond_income)
+        self.store += (stock_income + etf_income)
 
         stock_yield = self.stock.dividend / self.stock.share_price # if self.stock.share_price > 0 else 0
         report.append(("Stocks", stock_delta + stock_yield))
