@@ -39,7 +39,7 @@ class Engine:
                 total_gained = sell_amt * self.etf.get_price()
                 self.etf.shares -= sell_amt
 
-        self.store -= total_gained
+        # self.store -= total_gained
         return total_gained
 
     def get_total(self) -> float:

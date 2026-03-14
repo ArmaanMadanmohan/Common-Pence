@@ -91,7 +91,7 @@ Choice: """))
             res = self.engine.sell(inv, 1.00)
             return Response(response_type.SELL, f"Sold 100% of {inv} for £{res:.2f}", res)
         elif self.id == 10:
-            res = self.engine.sellAll()
+            res = self.engine.sell_all()
             return Response(response_type.SELL, f"Sold ALL investments for £{res:.2f}", res)
 
         return Response(response_type.ERROR, "Failed", 0)
