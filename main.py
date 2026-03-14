@@ -6,7 +6,7 @@ from modules.cardplay import response_type
 
 def calculate_total_wealth(player_engine, cash):
     portfolio_value = (player_engine.get_total())
-    return portfolito_value
+    return portfolio_value
 
 def trigger_random_event(cash):
     """Introduces random life events to make the game dynamic and unpredictable."""
@@ -81,9 +81,9 @@ def game_loop():
                 player_cash += game_engine.store
                 game_engine.store = 0 # Reset store after harvesting
             
-            portfolio = calculate_total_wealth(game_engine, player_cash)
+            portfolio_value = calculate_total_wealth(game_engine, player_cash)
             print(f"Starting Cash: £{player_cash:.2f}")
-            print(f"Total Portfolio Value: £{portfolio:.2f}")
+            print(f"Total Portfolio Value: £{portfolio_value:.2f}")
             
             # --- DEAL A NEW HAND OF 5 CARDS EVERY DAY ---
             current_hand = random.sample(cards, min(5, len(cards)))
@@ -145,7 +145,7 @@ def game_loop():
             
         print(f"\n{'*'*45}")
         print(f"--- END OF WEEK {week} PERFORMANCE REVIEW ---")
-        final_wealth = calculate_total_wealth(game_engine, player_cash)
+        final_wealth = game_engine +  player_cash
         print(f"Final Wealth: £{final_wealth:.2f} / Target Milestone: £{target_goal}")
         
         if final_wealth >= target_goal:
