@@ -101,10 +101,10 @@ class CommonPence(App):
             yield Static(f"Week {self.state.week} Day {self.state.day}")
             yield Horizontal(
                     Budget(f"£{self.state.cash}"),
-                    OwnedAssets("Assets")
+                    OwnedAssets(f"{self.state.engine.get_all()}")
                     )
             yield Vertical(
-                    Assets("Asset updates go here"),
+                    Assets(f"{self.state.engine.tick()}"),
                     Static(f"{self.state.message}"),
                     )
             yield Vertical(

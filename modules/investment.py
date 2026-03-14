@@ -9,6 +9,21 @@ class Engine:
         self.store = 0
         self.stage = 0
 
+    def get_all(self) -> str:
+        string = ""
+        if self.stock.shares > 0:
+            string += f"Stocks - {self.stock.shares}\n"
+        if len(self.bonds.contracts) > 0:
+            string += f"Bonds - {self.bonds.contracts}\n"
+        if self.etf.shares > 0:
+            string += f"ETF - {self.etf.shares}\n"
+        if self.bank.amt > 0:
+            string += f"Bank - {self.bank.amt}\n"
+
+        if string == "":
+            string = "No assets owned :("
+        return string
+
     def invest(self, card: str, value: int) -> None:  
         match card:   
             case "stocks":
