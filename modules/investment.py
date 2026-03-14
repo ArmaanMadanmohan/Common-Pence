@@ -50,17 +50,29 @@ class Engine:
         self.stock.shares = 0
         return self.store
 
-    def tick(self):
+    def tick(self) -> list[tuple[str, int]]:
         self.stage += 1
-        self.stock.update()
-        self.etf.update()
-        self.bank.update()
+        report = []
+
+        stock_delta = self.stock.update()
+        etf_delta = self.etf.update()
+        bank_delta = self.bank.update()
 
         stock_income = self.stock.shares * self.stock.dividend
         etf_income = self.etf.shares * self.etf.get_dividend()
-        bond_income = self.bonds.get_coupon_payment() 
+        # bond_income = self.bonds.get_coupon_payment() 
 
         self.store += (stock_income + etf_income + bond_income)
+
+        stock_yield = self.stock.dividend / self.stock.share_price # if self.stock.share_price > 0 else 0
+        report.append(("Stocks", stock_delta + stock_yield))
+
+        etf_yield = self.etf.get_dividend() / self.etf.get_price() # if self.etf.get_price() > 0 else 0
+        report.append(("ETF", etf_delta + etf_yield))
+
+        report.append(("Bank", bank_delta))
+
+        return report 
 
 class Stock: 
     def __init__(self):
@@ -71,13 +83,14 @@ class Stock:
     def add(self, num: int):
         self.shares += num / self.share_price 
 
-    def update(self, volatility = 1.0):   
+    def update(self, volatility = 1.0) -> float:   
         growth = random.uniform(-0.1 * volatility, 0.1 * volatility)
         self.share_price *= (1 + growth)
         if growth > 0:
             self.dividend *= (1 + (growth * 0.2))
         elif growth < -0.2:
             self.dividend *= 0.8
+        return growth
 
 class Bank:
     def __init__(self):
@@ -87,12 +100,13 @@ class Bank:
     def add(self, num: int):
         self.amt += num
 
-    def update(self):
+    def update(self) -> float:
         self.amt *= (1 + self.interest)
+        return self.interest
 
 class Bond:
     def __init__(self):
-        self.coupon_rate = 0.05  
+        self.coupon_rate = 0.08  
         self.bond_price = 4
         self.contracts = []
 
@@ -151,6 +165,9 @@ class ETF:
     def add(self, cash_amount: int):
         self.shares += cash_amount / self.get_price()
 
-    def update(self):
+    def update(self) -> float:
+        old = self.get_price()
         for s in self.holdings:
             s.update(0.5)
+        new = self.get_price()
+        return (new - old) / old
