@@ -1,6 +1,7 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Button, Label, Input, Static
 from textual.containers import Vertical, Horizontal
+from modules.state import GameState
 
 class Card(Button):
     DEFAULT_CSS = """
@@ -18,8 +19,6 @@ class Card(Button):
     def __init__(self, label:str, **kwargs):
         super().__init__(label, **kwargs)
 
-    def on_button_pressed(self) -> None:
-        self.app.notify(f"{self.id} pressed")
 
 class Budget(Static):
     DEFAULT_CSS = """
@@ -34,7 +33,6 @@ class Budget(Static):
     """
     def __init__(self, label:str, **kwargs):
         super().__init__(label, **kwargs)
-
 class OwnedAssets(Static):
     DEFAULT_CSS = """
     OwnedAssets {
@@ -62,6 +60,24 @@ class Assets(Static):
         super().__init__(label, **kwargs)
 
 class CommonPence(App):
+    def __init__(self):
+        super().__init__()
+        self.state = GameState(starting_cash=100.0)
+        self.state.draw_new_hand()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.app.notify(f"{self.id} pressed")
+        id = 0
+        match self.id:
+            case "a0": id = 0
+            case "a1": id = 1
+            case "a2": id = 2
+            case "a3": id = 3
+            case "a4": id = 4
+
+        card = self.state.current_hand.pop(id)
+        card.play_card(self.state.cash)
+
     CSS = """
     #hand {
             dock:bottom;
@@ -82,22 +98,22 @@ class CommonPence(App):
 
     def compose(self) -> ComposeResult:
             yield Header()
-            yield Static(round)
+            yield Static(f"Week {self.state.week} Day {self.state.day}")
             yield Horizontal(
-                    Budget("£500"),
+                    Budget(f"£{self.state.cash}"),
                     OwnedAssets("Assets")
                     )
             yield Vertical(
-                    Assets("Assets go here"),
-                    Static("Messages here"),
+                    Assets("Asset updates go here"),
+                    Static(f"{self.state.message}"),
                     )
             yield Vertical(
                 Horizontal(
-                    Card("Card1", id="hand1"),
-                    Card("Card2", id="hand2"),
-                    Card("Card3", id="hand3"),
-                    Card("Card4", id="hand4"),
-                    Card("Card5", id="hand5"),
+                    Card(self.state.current_hand[0].name, id="a0"),
+                    Card(self.state.current_hand[1].name, id="a1"),
+                    Card(self.state.current_hand[2].name, id="a2"),
+                    Card(self.state.current_hand[3].name, id="a3"),
+                    Card(self.state.current_hand[4].name, id="a4"),
                     ),
                 Button("skip", id="skip", variant="primary"),
                 

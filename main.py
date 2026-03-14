@@ -1,7 +1,7 @@
 import time
 import random
 
-from state import GameState # Ensure state.py is in the same directory, or change to modules.state
+from modules.state import GameState # Ensure state.py is in the same directory, or change to modules.state
 from modules.cardplay import response_type
 
 def trigger_random_event(cash):
