@@ -5,8 +5,8 @@ from modules.cards import cards
 from modules.cardplay import response_type
 
 def calculate_total_wealth(player_engine, cash):
-    portfolio_value = (player_engine.stock.shares * player_engine.stock.share_price) + player_engine.bonds + player_engine.etf + player_engine.bank.amt
-    return cash + portfolio_value
+    portfolio_value = (player_engine.get_total())
+    return portfolito_value
 
 def trigger_random_event(cash):
     """Introduces random life events to make the game dynamic and unpredictable."""
@@ -46,15 +46,19 @@ def print_week_lore(week):
 def game_loop():
     print("Welcome to Common Pence: The Student Finance Simulator!")
     print("Your mission: Navigate 5 grueling weeks of student life, make smart financial decisions, and graduate with financial wellbeing.\n")
-    time.sleep(1)
+    time.sleep(2)
+    print("You will be given a hand of 5 cards.\n")
+    time.sleep(2)
+    print("You can play up to 3 cards per day.\n")
+    time.sleep(2)
+    print("Each card will let you perform a financial decision such as running a side hustle, investing, selling etc.\n")
+    time.sleep(2)
     
     game_engine = Engine() 
     player_cash = 100.0      
     
     TOTAL_WEEKS = 5
     DAYS_PER_WEEK = 5
-    BASE_GOAL = 150       
-    GOAL_MULTIPLIER = 1.5  
 
     for week in range(1, TOTAL_WEEKS + 1):
         target_goal = 1000 
@@ -77,54 +81,63 @@ def game_loop():
                 player_cash += game_engine.store
                 game_engine.store = 0 # Reset store after harvesting
             
-            current_wealth = calculate_total_wealth(game_engine, player_cash)
-            print(f"Current Cash: £{player_cash:.2f}")
-            print(f"Total Wealth (Cash + Portfolio): £{current_wealth:.2f}")
+            portfolio = calculate_total_wealth(game_engine, player_cash)
+            print(f"Starting Cash: £{player_cash:.2f}")
+            print(f"Total Portfolio Value: £{portfolio:.2f}")
             
             # --- DEAL A NEW HAND OF 5 CARDS EVERY DAY ---
-            # We use min() just in case your deck ever shrinks below 5 cards!
             current_hand = random.sample(cards, min(5, len(cards)))
+            actions_left = 3
             
-            print("\nAvailable actions: ")
-            print("1. Make a Financial Decision (Play a Card)")
-            print("2. Hold Positions (Skip Day)")
-            
-            choice = input("What would you like to do? (1/2): ")
-            
-            if choice == '1':
-                print("\nYour Hand for Today:")
-                # We iterate over current_hand instead of the full cards list
-                for idx, c in enumerate(current_hand):
-                    print(f"{idx}. {c.name}")
+            # Action Phase Loop
+            while actions_left > 0 and current_hand:
+                print(f"\n--- Actions Left: {actions_left} ---")
+                print(f"Current Cash: £{player_cash:.2f}")
+                print("1. Make a Financial Decision (Play a Card)")
+                print("2. Hold Positions (End Day early)")
                 
-                try:
-                    card_choice = int(input("\nSelect an opportunity to pursue (number): "))
+                choice = input("What would you like to do? (1/2): ")
+                
+                if choice == '1':
+                    print("\nYour Hand for Today:")
+                    for idx, c in enumerate(current_hand):
+                        print(f"{idx}. {c.name}")
                     
-                    # Ensure they pick a valid index from their current hand
-                    if card_choice < 0 or card_choice >= len(current_hand):
-                        raise ValueError("Card choice out of range.")
+                    try:
+                        card_choice = int(input("\nSelect an opportunity to pursue (number): "))
                         
-                    selected_card = current_hand[card_choice]
-                    selected_card.engine = game_engine
-                    
-                    # Capture the response to update player cash
-                    response = selected_card.play_card(player_cash)
-                    print(f"\n>>> {response.text}")
-                    
-                    if response.response_type == response_type.INVEST:
-                        player_cash -= response.value
-                    elif response.response_type == response_type.SELL:
-                        player_cash += response.value
-                    elif response.response_type == response_type.INSTANT:
-                        player_cash += response.value
-                    
-                except (ValueError, IndexError):
-                    print("Invalid decision. You fumbled your hand and missed an opportunity today!")
-                    
-            elif choice == '2':
-                print("You decided to hold your positions and let the market do its work.")
-            else:
-                print("Invalid choice. The day passed you by.")
+                        if card_choice < 0 or card_choice >= len(current_hand):
+                            raise ValueError("Card choice out of range.")
+                            
+                        # Pop the card so it is removed from the hand once played
+                        selected_card = current_hand.pop(card_choice)
+                        selected_card.engine = game_engine
+                        
+                        # Capture the response to update player cash
+                        response = selected_card.play_card(player_cash)
+                        print(f"\n>>> {response.text}")
+                        
+                        if response.response_type == response_type.INVEST:
+                            player_cash -= response.value
+                        elif response.response_type == response_type.SELL:
+                            player_cash += response.value
+                        elif response.response_type == response_type.INSTANT:
+                            player_cash += response.value
+                        
+                        actions_left -= 1
+                        
+                    except (ValueError, IndexError):
+                        print("Invalid decision. You fumbled your hand and wasted an action!")
+                        actions_left -= 1
+                        
+                elif choice == '2':
+                    print("You decided to hold your positions and let the market do its work.")
+                    break  # Exit the action loop and move to market tick
+                else:
+                    print("Invalid choice. Try again.")
+            
+            if actions_left == 0:
+                print("\nYou're out of actions for today!")
             
             # 3. Market moves at the end of the day
             game_engine.tick()
