@@ -1,17 +1,16 @@
-from modules.cardplay import Card, response_type
-from modules.investment import Engine
+from modules.cardplay import Card, card_type
 
+# We pass None for the engine here, as main.py will dynamically inject the live engine instance
 cards = [
-        Card(0, "inv_stocks", response_type.INVEST, Engine),
-        Card(1, "inv_ETF", response_type.INVEST, Engine),
-        Card(2, "inv_bank", response_type.INVEST, Engine),
-        Card(3, "inv_bond", response_type.INVEST, Engine),
-        Card(4, "sell_15", response_type.SELL, Engine),
-        Card(5, "sell_30", response_type.SELL, Engine),
-        Card(6, "sell_50", response_type.SELL, Engine),
-        Card(7, "sell_100", response_type.SELL, Engine),
-        Card(8, "generate_sm", response_type.INSTANT, Engine),
-        Card(9, "generate_lg", response_type.INSTANT, Engine),
-        Card(10, "sell_all", response_type.SELL, Engine),
+        Card(0, "Invest in Stocks", card_type.INVEST, None),
+        Card(1, "Invest in ETFs", card_type.INVEST, None),
+        Card(2, "Deposit in Bank", card_type.INVEST, None),
+        Card(3, "Buy Bonds", card_type.INVEST, None),
+        Card(4, "Sell 15% of an Asset", card_type.SELL, None),
+        Card(5, "Sell 30% of an Asset", card_type.SELL, None),
+        Card(6, "Sell 50% of an Asset", card_type.SELL, None),
+        Card(7, "Sell 100% of an Asset", card_type.SELL, None),
+        Card(8, "Small Side Hustle (+£25)", card_type.INSTANT, None),
+        Card(9, "Large Side Hustle (+£50)", card_type.INSTANT, None),
+        Card(10, "Liquidate Everything (Sell All)", card_type.SELL, None),
 ]
-
